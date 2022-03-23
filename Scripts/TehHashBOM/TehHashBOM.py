@@ -4,6 +4,7 @@
 import adsk.core, adsk.fusion, traceback
 import subprocess, os, platform
 from shutil import copyfile
+import csv
 
 # Globals
 app = adsk.core.Application.get()
@@ -14,6 +15,7 @@ addin_path = os.path.dirname(os.path.realpath(__file__))
 
 defaultBomFilterStr = '#bom'
 defaultBeamFilterStr = '#beam'
+defaultExportToCSVEnabbled = False
 
 
 # global set of event handlers to keep them referenced for the duration of the command
@@ -90,6 +92,7 @@ class BOMCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             inputs.addStringValueInput('bomFilterString', 'BOM Filter String', defaultBomFilterStr)
             inputs.addStringValueInput('beamFilterString', 'Beam Filter String', defaultBeamFilterStr)
+            inputs.addBoolValueInput('exportToCSV', 'Also export to CSV', True, "", defaultExportToCSVEnabbled)
 
         except:
             if ui:
@@ -113,7 +116,8 @@ class BOMCommandExecuteHandler(adsk.core.CommandEventHandler):
                     bom.bomFilterString = input.value
                 if input.id == 'beamFilterString':
                     bom.beamFilterString = input.value
-
+                if input.id == 'exportToCSV':
+                    bom.exportToCSV = input.value
 
 
             bom.extractBOM()
@@ -159,6 +163,7 @@ class BOM:
     def __init__(self):
         self._bomFilterStr = defaultBomFilterStr
         self._beamFilterStr = defaultBeamFilterStr
+        self._exportToCSV = defaultExportToCSVEnabbled
 
     #properties
     @property
@@ -175,6 +180,12 @@ class BOM:
     def beamFilterString(self, value):
         self._beamFilterStr = value        
 
+    @property
+    def exportToCSV(self):
+        return self._exportToCSV
+    @exportToCSV.setter
+    def exportToCSV(self, value):
+        self._exportToCSV = value        
 
     @classmethod
     def addComponentToList(self, list, component, isBeam):
@@ -482,6 +493,9 @@ class BOM:
         if len(beams) > 0:
             output.writelines(buildTable(beams, dst_directory, 'Beam'))
 
+        if self._exportToCSV:
+            buildCSV(bom, os.path.splitext(filename)[0] + '_bom')
+            buildCSV(beams, os.path.splitext(filename)[0] + '_beam')
 
         output.writelines(buildHtmlFooter(dst_directory))
         # output.writelines(msg)
@@ -604,6 +618,13 @@ def walkThrough(bom):
 
 
 
+def buildCSV(bom, fileName):
+    with open(fileName + '.csv', 'w', encoding='UTF8', newline='') as csvfile:
+        writer = csv.writer(csvfile, quoting=csv.QUOTE_NONNUMERIC, delimiter=';')
+        writer.writerow(['name', 'instances', 'volume', 'boundingX', 'boundingY', 'boundingZ', 'is_profile', 'profile_size', 'profile_length'])
+        for item in bom:
+            name =  item['name'].encode().decode('windows-1251')
+            writer.writerow([name, item['instances'], item['volume'], item['boundingX'], item['boundingY'], item['boundingZ'], item['is_profile'], item['profile_size'], item['profile_length']])
 
 def buildTable(bom, imageDirectory, tableName):
     path, dir = os.path.split(imageDirectory)
