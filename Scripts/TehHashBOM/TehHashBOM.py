@@ -233,6 +233,17 @@ class BOM:
 
             if isBeam:
                 axisIndex = self.getLengthAxis(component)
+                #axisIndex = -1
+                if axisIndex < 0:
+                    if boundingX > boundingY and boundingX > boundingZ:
+                        axisIndex = 0
+                    
+                    if boundingY > boundingX and boundingY > boundingZ:
+                        axisIndex = 1       
+                
+                    if boundingZ > boundingX and boundingZ > boundingY:
+                        axisIndex = 2                    
+
                 info['profile_axis'] = axisIndex
 
                 if axisIndex == 0:
