@@ -221,7 +221,7 @@ class BOM:
                 'component': component,
                 'name': component.name,
                 'instances': 1,
-                'volume': round(volume, 2),
+                'volume': volume,
                 'boundingX': boundingX,
                 'boundingY': boundingY,
                 'boundingZ': boundingZ,
