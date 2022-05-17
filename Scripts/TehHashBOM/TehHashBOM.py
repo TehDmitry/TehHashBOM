@@ -228,7 +228,10 @@ class BOM:
                 'is_profile': 0,
                 'profile_length': 0,
                 'profile_size': '',
-                'profile_axis': -1
+                'profile_axis': -1,
+                'i1': 0,
+                'i2': 0,
+                'i3': 0,
             }
 
             if isBeam:
@@ -284,7 +287,7 @@ class BOM:
     def collectBeam(self, list, component):
         beamExistInList = False
         for listI in list:
-            if self.componentsEquals( listI['component'], component):
+            if self.componentsEquals( listI, component):
                 # Increment the instance count of the existing row.
                 listI['instances'] += 1
                 beamExistInList = True
@@ -416,9 +419,12 @@ class BOM:
         return volume
 
     @classmethod
-    def componentsEquals(self, componentA, componentB):
-        if round(self.getVoume(componentA),2) != round(self.getVoume(componentB),2):
     # @timing
+    def componentsEquals(self, listItem, componentB):
+
+        componentA = listItem['component']
+
+        if round(listItem['volume'], 2) != round(self.getVolume(componentB),2):
             return False
         
         # physicalPropertiesA = componentA.getPhysicalProperties(adsk.fusion.CalculationAccuracy.HighCalculationAccuracy)
@@ -431,13 +437,22 @@ class BOM:
         # (retValA,i1A,i2A,i3A) = physicalPropertiesA.getPrincipalMomentsOfInertia()
         # (retValB,i1B,i2B,i3B) = physicalPropertiesB.getPrincipalMomentsOfInertia()
 
-        (retValA,i1A,i2A,i3A) = getPrincipalMomentsOfInertia(componentA)
+        if listItem['i1'] == 0:
+            (retValA,i1A,i2A,i3A) = getPrincipalMomentsOfInertia(componentA)
+            if not retValA:
+                return False
+
+            listItem['i1'] = i1A
+            listItem['i2'] = i2A
+            listItem['i3'] = i3A
+            
+        # (retValA,i1A,i2A,i3A) = getPrincipalMomentsOfInertia(componentA)
         (retValB,i1B,i2B,i3B) = getPrincipalMomentsOfInertia(componentB)
 
-        if not retValA or not retValB:
+        if not retValB:
             return False
 
-        return round(i1A,4) == round(i1B,4) and round(i2A,4) == round(i2B,4) and round(i3A,4) == round(i3B,4) 
+        return round(listItem['i1'],4) == round(i1B,4) and round(listItem['i2'],4) == round(i2B,4) and round(listItem['i3'],4) == round(i3B,4) 
 
 
 
