@@ -299,6 +299,8 @@ class BOM:
 
         hitFaces = [0, 0, 0] #x, y, z
 
+        unHitPoints = [0, 0, 0] #x, y, z
+
         if drawPoints:
             sketches = component.sketches
             sketchXY = sketches.add(component.xYConstructionPlane)
@@ -320,10 +322,19 @@ class BOM:
                 if drawPoints:
                     sketchPoint = sketchPointsXY.add(point)
 
+                hits = 0
+
                 hit_faces = component.findBRepUsingRay(point, Z_AXIS, 0, proximityTolerance) # BRepBodyEntityType
                 hitFaces[2] += hit_faces.count
+                hits += hit_faces.count
                 hit_faces = component.findBRepUsingRay(point, nZ_AXIS, 0, proximityTolerance) # BRepBodyEntityType
                 hitFaces[2] += hit_faces.count                
+                hits += hit_faces.count
+
+                if hits == 0:
+                    unHitPoints[2] += 1
+
+
 
         for x in getRange(component.boundingBox.minPoint.x, component.boundingBox.maxPoint.x, tolerance):
             for z in getRange(component.boundingBox.minPoint.z, component.boundingBox.maxPoint.z, tolerance):
@@ -331,11 +342,17 @@ class BOM:
                 if drawPoints:
                     sketchPoint = sketchPointsXY.add(point)
 
+                hits = 0
+
                 hit_faces = component.findBRepUsingRay(point, Y_AXIS, 0, proximityTolerance) # BRepBodyEntityType
                 hitFaces[1] += hit_faces.count
+                hits += hit_faces.count
                 hit_faces = component.findBRepUsingRay(point, nY_AXIS, 0, proximityTolerance) # BRepBodyEntityType
                 hitFaces[1] += hit_faces.count
+                hits += hit_faces.count
 
+                if hits == 0:
+                    unHitPoints[1] += 1
 
         for y in getRange(component.boundingBox.minPoint.y, component.boundingBox.maxPoint.y, tolerance):
             for z in getRange(component.boundingBox.minPoint.z, component.boundingBox.maxPoint.z, tolerance):
@@ -343,18 +360,35 @@ class BOM:
                 if drawPoints:
                     sketchPoint = sketchPointsXY.add(point)
 
+                hits = 0
+
                 hit_faces = component.findBRepUsingRay(point, X_AXIS, 0, proximityTolerance) # BRepBodyEntityType
                 hitFaces[0] += hit_faces.count
+                hits += hit_faces.count
                 hit_faces = component.findBRepUsingRay(point, nX_AXIS, 0, proximityTolerance) # BRepBodyEntityType
                 hitFaces[0] += hit_faces.count
+                hits += hit_faces.count
 
-        if hitFaces[0] < hitFaces[1] and hitFaces[0] < hitFaces[2]:
+                if hits == 0:
+                    unHitPoints[0] += 1
+
+        # if hitFaces[0] < hitFaces[1] and hitFaces[0] < hitFaces[2]:
+        #     return 0
+        
+        # if hitFaces[1] < hitFaces[0] and hitFaces[1] < hitFaces[2]:
+        #     return 1       
+       
+        # if hitFaces[2] < hitFaces[0] and hitFaces[2] < hitFaces[1]:
+        #     return 2
+
+
+        if unHitPoints[0] < unHitPoints[1] and unHitPoints[0] < unHitPoints[2]:
             return 0
         
-        if hitFaces[1] < hitFaces[0] and hitFaces[1] < hitFaces[2]:
+        if unHitPoints[1] < unHitPoints[0] and unHitPoints[1] < unHitPoints[2]:
             return 1       
        
-        if hitFaces[2] < hitFaces[0] and hitFaces[2] < hitFaces[1]:
+        if unHitPoints[2] < unHitPoints[0] and unHitPoints[2] < unHitPoints[1]:
             return 2
 
         return -1
