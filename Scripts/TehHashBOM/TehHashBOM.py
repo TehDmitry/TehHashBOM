@@ -499,7 +499,7 @@ class BOM:
         # title = spacePadRight('Name', 25) + spacePadRight('Instances', 15) + 'Volume\n'
         # msg = title + '\n' + walkThrough(bom)
         
-        output = open(filename, 'w')
+        output = open(filename, 'w', encoding='utf-8')
 
         output.writelines(buildHtmlHeader(dst_directory, product.rootComponent.name))
         
@@ -635,11 +635,11 @@ def walkThrough(bom):
 
 
 def buildCSV(bom, fileName):
-    with open(fileName + '.csv', 'w', encoding='UTF8', newline='') as csvfile:
+    with open(fileName + '.csv', 'w', encoding='utf-8', newline='') as csvfile:
         writer = csv.writer(csvfile, quoting=csv.QUOTE_NONNUMERIC, delimiter=';')
         writer.writerow(['name', 'instances', 'volume', 'boundingX', 'boundingY', 'boundingZ', 'is_profile', 'profile_size', 'profile_length'])
         for item in bom:
-            name =  item['name'].encode().decode('windows-1251')
+            name =  item['name']
             writer.writerow([name, item['instances'], item['volume'], item['boundingX'], item['boundingY'], item['boundingZ'], item['is_profile'], item['profile_size'], item['profile_length']])
 
 def buildTable(bom, imageDirectory, tableName):
@@ -663,11 +663,9 @@ def buildTable(bom, imageDirectory, tableName):
     mStr += '\n'
     for item in bom:
 
-#        name =  str(item['name'].decode('utf8'))
-        name =  item['name'].encode().decode('windows-1251')
         mStr += '{'
         mStr += 'id: "' + item['component'].id + '",'
-        mStr += 'name: "' + name + '",'
+        mStr += 'name: "' + item['name'] + '",'
         mStr += 'image: "' + dir +'/'+ item['component'].id +'.png' + '",'
         mStr += 'instances: ' + '%g' % item['instances'] + ','
         mStr += 'volume: ' + '%g' % (item['volume']) + ','
