@@ -4,7 +4,9 @@
 import adsk.core, adsk.fusion, traceback
 import subprocess, os, platform
 from shutil import copyfile
+import time
 import csv
+
 
 # Globals
 app = adsk.core.Application.get()
@@ -20,6 +22,16 @@ defaultExportToCSVEnabbled = False
 
 # global set of event handlers to keep them referenced for the duration of the command
 handlers = []
+
+def timing(f):
+    def wrap(*args, **kwargs):
+        time1 = time.time()
+        ret = f(*args, **kwargs)
+        time2 = time.time()
+        print('{:s} function took {:.3f} ms'.format(f.__name__, (time2-time1)*1000.0))
+
+        return ret
+    return wrap
 
 def run(context):
     try:
@@ -188,6 +200,7 @@ class BOM:
         self._exportToCSV = value        
 
     @classmethod
+    @timing
     def addComponentToList(self, list, component, isBeam):
         # Gather any BOM worthy values from the component
         volume = 0
@@ -254,6 +267,7 @@ class BOM:
 
 
     @classmethod
+    @timing
     def collectBeam(self, list, component):
         beamExistInList = False
         for listI in list:
@@ -345,6 +359,7 @@ class BOM:
 
 
     @classmethod
+    # @timing
     def getVoume(self, component):   
         volume = 0
         bodies = component.bRepBodies
@@ -356,6 +371,7 @@ class BOM:
     @classmethod
     def componentsEquals(self, componentA, componentB):
         if round(self.getVoume(componentA),2) != round(self.getVoume(componentB),2):
+    # @timing
             return False
         
         # physicalPropertiesA = componentA.getPhysicalProperties(adsk.fusion.CalculationAccuracy.HighCalculationAccuracy)
