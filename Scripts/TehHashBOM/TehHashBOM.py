@@ -203,11 +203,13 @@ class BOM:
     @timing
     def addComponentToList(self, list, component, isBeam):
         # Gather any BOM worthy values from the component
-        volume = 0
-        bodies = component.bRepBodies
-        for bodyK in bodies:
-            if bodyK.isSolid:
-                volume += bodyK.volume
+        # volume = 0
+        # bodies = component.bRepBodies
+        # for bodyK in bodies:
+        #     if bodyK.isSolid:
+        #         volume += bodyK.volume
+
+        volume = self.getVolume(component)                
         
         if volume > 0:
             convUnit = GetConvertUnit()
@@ -360,7 +362,7 @@ class BOM:
 
     @classmethod
     # @timing
-    def getVoume(self, component):   
+    def getVolume(self, component):   
         volume = 0
         bodies = component.bRepBodies
         for bodyK in bodies:
