@@ -436,7 +436,14 @@ class BOM:
         bodies = component.bRepBodies
         for bodyK in bodies:
             if bodyK.isSolid:
-                volume += bodyK.volume        
+                volume += bodyK.volume 
+
+        for occurrence in component.allOccurrences:
+            for bodyK in occurrence.bRepBodies:
+                if bodyK.isSolid:
+                    volume += bodyK.volume             
+
+
         return volume
 
     @classmethod
