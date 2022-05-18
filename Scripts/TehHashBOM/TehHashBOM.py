@@ -20,6 +20,7 @@ defaultBeamFilterStr = '#beam'
 defaultExportToCSVEnabbled = False
 defaultRemoveTagsFromName = True
 
+defaultKeepZeroVolumeComponents = True
 
 # global set of event handlers to keep them referenced for the duration of the command
 handlers = []
@@ -231,7 +232,7 @@ class BOM:
 
         volume = self.getVolume(component)                
         
-        if volume > 0:
+        if defaultKeepZeroVolumeComponents or volume > 0:
             convUnit = GetConvertUnit()
             boundingX = abs(round(convUnit * (component.boundingBox.maxPoint.x - component.boundingBox.minPoint.x), 1))
             boundingY = abs(round(convUnit * (component.boundingBox.maxPoint.y - component.boundingBox.minPoint.y), 1))
