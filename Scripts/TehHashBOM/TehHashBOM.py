@@ -22,6 +22,7 @@ defaultRemoveTagsFromName = True
 
 defaultKeepZeroVolumeComponents = True
 
+cameraBackup = app.activeViewport.camera
 gridVisibilityBackup = False
 
 # global set of event handlers to keep them referenced for the duration of the command
@@ -122,8 +123,7 @@ class BOMCommandExecuteHandler(adsk.core.CommandEventHandler):
         super().__init__()
     def notify(self, args):
         try:
-            cameraBackup = app.activeViewport.camera
-
+            #cameraBackup = app.activeViewport.camera
             gridVisibilityBackup = isGridDisplayOn()
             
             command = args.firingEvent.sender
@@ -688,6 +688,9 @@ def takeImage(component, occs, path):
         camera.target = cameraTarget
         camera.isFitView = True
         camera.isSmoothTransition = False
+        # camera.eye = cameraBackup.eye
+        camera.eye = adsk.core.Point3D.create(100 + cameraTarget.x, -100 + cameraTarget.y, 100 + cameraTarget.z)
+
         app.activeViewport.camera = camera
         
         app.activeViewport.refresh()
