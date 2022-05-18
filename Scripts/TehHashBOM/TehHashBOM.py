@@ -18,6 +18,7 @@ addin_path = os.path.dirname(os.path.realpath(__file__))
 defaultBomFilterStr = '#bom'
 defaultBeamFilterStr = '#beam'
 defaultExportToCSVEnabbled = False
+defaultRemoveTagsFromName = True
 
 
 # global set of event handlers to keep them referenced for the duration of the command
@@ -102,9 +103,11 @@ class BOMCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             inputs.addImageCommandInput('image', '', 'resources/Icon_128.png')
 
-            inputs.addStringValueInput('bomFilterString', 'BOM Filter String', defaultBomFilterStr)
-            inputs.addStringValueInput('beamFilterString', 'Beam Filter String', defaultBeamFilterStr)
+            inputs.addStringValueInput('bomFilterString', 'BOM Filter Tag', defaultBomFilterStr)
+            inputs.addStringValueInput('beamFilterString', 'Beam Filter Tag', defaultBeamFilterStr)
             inputs.addBoolValueInput('exportToCSV', 'Also export to CSV', True, "", defaultExportToCSVEnabbled)
+            inputs.addBoolValueInput('removeTagsFromName', 'Remove Tags', True, "", defaultRemoveTagsFromName)
+
 
         except:
             if ui:
@@ -130,7 +133,8 @@ class BOMCommandExecuteHandler(adsk.core.CommandEventHandler):
                     bom.beamFilterString = input.value
                 if input.id == 'exportToCSV':
                     bom.exportToCSV = input.value
-
+                if input.id == 'removeTagsFromName':
+                    bom.removeTagsFromName = input.value
 
             bom.extractBOM()
             args.isValidResult = True
@@ -176,6 +180,7 @@ class BOM:
         self._bomFilterStr = defaultBomFilterStr
         self._beamFilterStr = defaultBeamFilterStr
         self._exportToCSV = defaultExportToCSVEnabbled
+        self._removeTagsFromName = defaultRemoveTagsFromName
 
     #properties
     @property
@@ -197,10 +202,25 @@ class BOM:
         return self._exportToCSV
     @exportToCSV.setter
     def exportToCSV(self, value):
-        self._exportToCSV = value        
+        self._exportToCSV = value     
+
+    @property
+    def removeTagsFromName(self):
+        return self._removeTagsFromName
+    @removeTagsFromName.setter
+    def removeTagsFromName(self, value):
+        self._removeTagsFromName = value                
+
 
     @classmethod
     @timing
+    def beautifyName(self, name):
+        print(self._bomFilterStr)
+        if self.removeTagsFromName:
+            name = name.replace(str(self._bomFilterStr), "", 1)
+            name = name.replace(str(self._beamFilterStr), "", 1)
+        return name
+
     def addComponentToList(self, list, component, isBeam):
         # Gather any BOM worthy values from the component
         # volume = 0
@@ -219,7 +239,7 @@ class BOM:
 
             info = {
                 'component': component,
-                'name': component.name,
+                'name': self.beautifyName(component.name),
                 'instances': 1,
                 'volume': volume,
                 'boundingX': boundingX,
