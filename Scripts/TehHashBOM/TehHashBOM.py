@@ -216,8 +216,6 @@ class BOM:
         self._removeTagsFromName = value                
 
 
-    @classmethod
-    @timing
     def beautifyName(self, name):
         print(self._bomFilterStr)
         if self.removeTagsFromName:
@@ -292,7 +290,6 @@ class BOM:
             list.append(info)        
 
 
-    @classmethod
     def collectInstance(self, list, component):
         instanceExistInList = False
         for listI in list:
@@ -306,8 +303,7 @@ class BOM:
             self.addComponentToList(list, component, False)
 
 
-    @classmethod
-    @timing
+    # @timing
     def collectBeam(self, list, component):
         beamExistInList = False
         for listI in list:
@@ -320,7 +316,6 @@ class BOM:
         if not beamExistInList:
             self.addComponentToList(list, component, True)    
 
-    @classmethod
     def getLengthAxis(self, component):   
         drawPoints = False
 
@@ -432,7 +427,6 @@ class BOM:
         return -1
 
 
-    @classmethod
     # @timing
     def getVolume(self, component):   
         volume = 0
@@ -449,7 +443,6 @@ class BOM:
 
         return volume
 
-    @classmethod
     # @timing
     def componentsEquals(self, listItem, componentB):
 
