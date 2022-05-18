@@ -479,12 +479,7 @@ class BOM:
         return round(listItem['i1'],4) == round(i1B,4) and round(listItem['i2'],4) == round(i2B,4) and round(listItem['i3'],4) == round(i3B,4) 
 
 
-
     def extractBOM(self):
-        global newComp
-        # newComp = createNewComponent()
-        #if newComp is None:
-        #ui.messageBox('New component failed to create', 'New Component Failed')
 
         product = app.activeProduct
         design = adsk.fusion.Design.cast(product)
@@ -492,9 +487,6 @@ class BOM:
         if not design:
             ui.messageBox('No active design', title)
             return
-
-
-
 
         # Get all occurrences in the root component of the active design
         root = design.rootComponent
@@ -520,31 +512,6 @@ class BOM:
 
             if self._bomFilterStr in comp.name:
                 self.collectInstance(bom, comp)
-
-                # instanceExistInBom = False
-                # for bomI in bom:
-                #     if bomI['component'] == comp:
-                #         # Increment the instance count of the existing row.
-                #         bomI['instances'] += 1
-                #         instanceExistInBom = True
-                #         break
-
-                # if not instanceExistInBom:
-                #     # Gather any BOM worthy values from the component
-                #     volume = 0
-                #     bodies = comp.bRepBodies
-                #     for bodyK in bodies:
-                #         if bodyK.isSolid:
-                #             volume += bodyK.volume
-                    
-                #     if volume > 0:
-                #         # Add this component to the BOM
-                #         bom.append({
-                #             'component': comp,
-                #             'name': comp.name,
-                #             'instances': 1,
-                #             'volume': str(round(volume, 2)) 
-                #         })
 
         if len(bom) == 0 and len(beams) == 0:
             ui.messageBox('No hash items found', 'Teh Hash BOM')
@@ -579,11 +546,6 @@ class BOM:
             Unisolate(visibleTopLevelComp)        
         
         #ShowAll(occs)
-      
-
-        # Display the BOM
-        # title = spacePadRight('Name', 25) + spacePadRight('Instances', 15) + 'Volume\n'
-        # msg = title + '\n' + walkThrough(bom)
         
         output = open(filename, 'w', encoding='utf-8')
 
@@ -600,7 +562,6 @@ class BOM:
             buildCSV(beams, os.path.splitext(filename)[0] + '_beam')
 
         output.writelines(buildHtmlFooter(dst_directory))
-        # output.writelines(msg)
         output.close()
 
 
@@ -739,18 +700,6 @@ def buildTable(bom, imageDirectory, tableName):
     mStr = '<script type="text/javascript">'
     mStr += 'var generated' + tableName + 'Table = ['
 
-    # mStr = '<h1>'+tableName+'</h1>'
-    # mStr += '<table  class="table table-striped table-hover">'
-    # mStr += '<thead><tr>'
-    # mStr += '<th scope="col">image</th>'
-    # mStr += '<th scope="col">name</th>'
-    # mStr += '<th scope="col">instances</th>'
-    # mStr += '<th scope="col">volume</th>'
-    # mStr += '<th scope="col">size</th>'
-    # mStr += '<th scope="col">length</th>'
-    # mStr += '<th scope="col">total length</th>'
-    # mStr += '</tr></thead> <tbody>'
-    # mStr += '\n'
     mStr += '\n'
     for item in bom:
 
@@ -770,30 +719,10 @@ def buildTable(bom, imageDirectory, tableName):
         mStr += '},'
         mStr += '\n'
 
-        # mStr += '<tr>'
-        # mStr += '<td><img src="' +dir +'/'+ item['component'].id +'.png"></td>'
-        # mStr += '<td>'+  name + '<br>' + '%g' % (item['boundingX']) + 'x'+'%g' % (item['boundingY']) + 'x'+'%g' % (item['boundingZ']) + '</td>'
-        # mStr += '<td>'+  '%g' % item['instances'] +'</td>'
-        # mStr += '<td>'+  '%g' % (item['volume']) +'</td>'
-        # mStr += '<td>'+  str(item['profile_size']) +'</td>'
-        # if item['profile_length']:
-        #     mStr += '<td>'+  '%g' % (item['profile_length']) +'</td>'
-        #     mStr += '<td>'+  '%g' % (item['profile_length'] * item['instances']) +'</td>'
-        # else:
-        #     mStr += '<td>-</td>'
-        #     mStr += '<td>-</td>'
-       
-        # mStr += '</tr>'
-        # mStr += '\n'
-
     mStr += ']; </script>'
     return mStr
 
 def buildHtmlHeader(dst_directory, name):
-    # copyfile(addin_path + '/resources/bootstrap.min.css', dst_directory + '/bootstrap.min.css')
-    # copyfile(addin_path + '/resources/bootstrap.min.js', dst_directory + '/bootstrap.min.js')
-    # copyfile(addin_path + '/resources/jquery-3.3.1.slim.min.js', dst_directory + '/jquery-3.3.1.slim.min.js')
-    # copyfile(addin_path + '/resources/popper.min.js', dst_directory + '/popper.min.js')
 
     copyfile(addin_path + '/resources/vue/css/chunk-vendors.css', dst_directory + '/chunk-vendors.css')
     copyfile(addin_path + '/resources/vue/js/app.min.js', dst_directory + '/app.min.js')
