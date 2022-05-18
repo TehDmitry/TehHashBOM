@@ -22,6 +22,8 @@ defaultRemoveTagsFromName = True
 
 defaultKeepZeroVolumeComponents = True
 
+gridVisibilityBackup = False
+
 # global set of event handlers to keep them referenced for the duration of the command
 handlers = []
 
@@ -122,6 +124,7 @@ class BOMCommandExecuteHandler(adsk.core.CommandEventHandler):
         try:
             cameraBackup = app.activeViewport.camera
 
+            gridVisibilityBackup = isGridDisplayOn()
             
             command = args.firingEvent.sender
             inputs = command.commandInputs
@@ -141,7 +144,7 @@ class BOMCommandExecuteHandler(adsk.core.CommandEventHandler):
             args.isValidResult = True
 
             app.activeViewport.camera = cameraBackup
-
+            setGridDisplay(gridVisibilityBackup)
         except:
             if ui:
                 ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
@@ -677,6 +680,8 @@ def takeImage(component, occs, path):
         else:
             occurrence.isIsolated = True
 
+        setGridDisplay(False)
+
         viewport = app.activeViewport
         camera = viewport.camera
 
@@ -853,3 +858,30 @@ def buildHtmlFooter(dst_directory):
     </body>\
 </html>'
     return mStr    
+
+def isGridDisplayOn():
+    app = adsk.core.Application.get()
+    ui  = app.userInterface
+
+    cmdDef = ui.commandDefinitions.itemById('ViewLayoutGridCommand')
+    listCntrlDef = adsk.core.ListControlDefinition.cast(cmdDef.controlDefinition)
+    layoutGridItem = listCntrlDef.listItems.item(0)
+    
+    if layoutGridItem.isSelected:
+        return True
+    else:
+        return False
+    
+
+def setGridDisplay(turnOn):
+    app = adsk.core.Application.get()
+    ui  = app.userInterface
+
+    cmdDef = ui.commandDefinitions.itemById('ViewLayoutGridCommand')
+    listCntrlDef = adsk.core.ListControlDefinition.cast(cmdDef.controlDefinition)
+    layoutGridItem = listCntrlDef.listItems.item(0)
+    
+    if turnOn:
+        layoutGridItem.isSelected = True
+    else:
+        layoutGridItem.isSelected = False       
