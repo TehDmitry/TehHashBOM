@@ -398,15 +398,23 @@ export default class BomTable extends Vue {
             item.profile_length = 120;
             this.bomItems.push(item);
         } else {
-            generatedBOMTable.forEach((generatedItem: BomItemFromFusion) => {
+            if (typeof generatedBOMTable !== "undefined") {
+                generatedBOMTable.forEach(
+                    (generatedItem: BomItemFromFusion) => {
                 generatedItem.layout_index = -1;
                 this.bomItems.push(generatedItem);
-            });
+                    }
+                );
+            }
 
-            generatedBeamTable.forEach((generatedItem: BomItemFromFusion) => {
+            if (typeof generatedBeamTable !== "undefined") {
+                generatedBeamTable.forEach(
+                    (generatedItem: BomItemFromFusion) => {
                 generatedItem.layout_index = -1;
                 this.bomItems.push(generatedItem);
-            });
+                    }
+                );
+            }
         }
     }
 }
