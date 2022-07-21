@@ -404,8 +404,8 @@ export default class BomTable extends Vue {
             if (typeof generatedBOMTable !== "undefined") {
                 generatedBOMTable.forEach(
                     (generatedItem: BomItemFromFusion) => {
-                generatedItem.layout_index = -1;
-                this.bomItems.push(generatedItem);
+                        generatedItem.layout_index = -1;
+                        this.bomItems.push(generatedItem);
                     }
                 );
             }
@@ -413,8 +413,8 @@ export default class BomTable extends Vue {
             if (typeof generatedBeamTable !== "undefined") {
                 generatedBeamTable.forEach(
                     (generatedItem: BomItemFromFusion) => {
-                generatedItem.layout_index = -1;
-                this.bomItems.push(generatedItem);
+                        generatedItem.layout_index = -1;
+                        this.bomItems.push(generatedItem);
                     }
                 );
             }
