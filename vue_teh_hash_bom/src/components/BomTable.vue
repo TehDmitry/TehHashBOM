@@ -175,7 +175,10 @@
                             :key="`lay-${layindex}`"
                         >
                             <v-card-subtitle>
-                                #{{ layindex + 1 }} len:{{ rawBar.length }}
+                                #{{ layindex + 1 }} len:{{
+                                    rawBar.length
+                                }}
+                                used: {{ rawBar.lengthUsed() }}
                             </v-card-subtitle>
                             <v-card-text>
                                 <table
